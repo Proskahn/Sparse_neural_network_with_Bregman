@@ -96,7 +96,9 @@ class reg_l1_l1_l2:
         self.l1_l2 = reg_l1_l2(lamda=self.lamda)
         
     def __call__(self, x):
-        return 0
+        l1_penalty = self.l1(x)
+        l1_l2_penalty = self.l1_l2(x)
+        return l1_penalty + l1_l2_penalty
         
     def prox(self, x, delta=1.0):
         thresh = delta * self.lamda
