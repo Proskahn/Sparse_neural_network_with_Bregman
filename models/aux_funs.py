@@ -178,12 +178,12 @@ def node_sparsity(model):
     ret = []
     #
     for m in model.modules():
-        if isinstance(m, torch.nn.Linear):
+        if isinstance(m, (torch.nn.Conv2d, torch.nn.ConvTranspose2d)):
             a = m.weight
             
-            nnz = torch.count_nonzero(torch.norm(a.data,p=2,dim=1)).item()
-            numel_loc = a.shape[0]
-            ret.append(nnz/numel_loc)
+            nnz = torch.count_nonzero(torch.norm(a.data, p=2, dim=1)).item()
+            numel_loc = a.shape[0] * a.shape[2] * a.shape[3]  # Number of elements in weight tensor
+            ret.append(nnz / numel_loc)
     #
     return ret
 
