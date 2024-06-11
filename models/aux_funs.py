@@ -5,13 +5,9 @@ import math
 from itertools import cycle
   
     
-def init_weight_bias_normal(m):
-    if type(m) == nn.Linear:
-        m.weight.data = torch.randn_like(m.weight.data)
-        m.bias.data = torch.randn_like(m.bias.data)
-        
-        
-        
+import torch
+import torch.nn as nn
+import math
 def sparsify_(model, sparsity, ltype = nn.Linear, conv_group=True, row_group = False):       
     for m in model.modules():
         if not isinstance(m, ltype):
@@ -42,60 +38,39 @@ def sparsify_(model, sparsity, ltype = nn.Linear, conv_group=True, row_group = F
             # multiply with mask
             c = w.view(w.shape[0]*w.shape[1],-1)
             m.weight.data = mask.mul(c).view(w.shape)
-            
-        
-# def sparsify_(model, sparsity):
-#     if isinstance(sparsity, list):
-#         s_iter = cycle(sparsity)
-#     else:
-#         s_iter = cycle([sparsity])
-        
-#     for m in model.modules():
-#         if isinstance(m, torch.nn.Linear) or isinstance(m, torch.nn.Conv2d):
-#             s_loc = next(s_iter)
-#             # number of zeros
-#             n = int(s_loc*m.weight.numel())
-#             # initzialize mask
-#             mask = torch.zeros_like(m.weight)
-#             row_idx = torch.randint(low=0,high=mask.shape[0],size=(n,))
-#             col_idx = torch.randint(low=0,high=mask.shape[1],size=(n,))
-#             # fill with ones at random indices
-#             mask[row_idx, col_idx] = 1.
-#             m.weight.data.mul_(mask)
 
-def sparse_bias_uniform_(model,r0,r1,ltype = nn.Linear):
+            
+def sparse_bias_uniform_(model, r0, r1, ltype=nn.Conv2d):
     for m in model.modules():
-        if isinstance(m,ltype):
-            if hasattr(m, 'bias') and not (m.bias is None):
+        if isinstance(m, ltype):
+            if hasattr(m, 'bias') and m.bias is not None:
                 fan_in, _ = nn.init._calculate_fan_in_and_fan_out(m.weight)
                 bound0 = r0 / math.sqrt(fan_in)
-                bound1 = r1/math.sqrt(fan_in)
+                bound1 = r1 / math.sqrt(fan_in)
                 nn.init.uniform_(m.bias, -bound0, bound1)
-                
-def bias_constant_(model,r):
+
+def bias_constant_(model, r, ltype=nn.Conv2d):
     for m in model.modules():
-        if isinstance(m, torch.nn.Linear):
-            if type(m) == nn.Linear:
-                nn.init.constant_(m.bias, r)           
-                
-def sparse_weight_normal_(model,r,ltype = nn.Linear):
+        if isinstance(m, ltype):
+            if hasattr(m, 'bias') and m.bias is not None:
+                nn.init.constant_(m.bias, r)
+
+def sparse_weight_normal_(model, r, ltype=nn.Conv2d):
     for m in model.modules():
-        if isinstance(m,ltype):
+        if isinstance(m, ltype):
             nn.init.kaiming_normal_(m.weight)
             m.weight.data.mul_(r)
-                
 
-def sparse_weight_uniform_(model,r):
+def sparse_weight_uniform_(model, r, ltype=nn.Conv2d):
     for m in model.modules():
-        if isinstance(m, torch.nn.Linear):
-            #nn.init.kaiming_uniform_(m.weight, a=r*math.sqrt(5))
-            fan = nn.init._calculate_correct_fan(m.weight, 'fan_in')
-            std = r / math.sqrt(fan)
+        if isinstance(m, ltype):
+            fan_in = nn.init._calculate_correct_fan(m.weight, 'fan_in')
+            std = r / math.sqrt(fan_in)
             bound = math.sqrt(3.0) * std  # Calculate uniform bounds from standard deviation
             
             with torch.no_grad():
                 m.weight.uniform_(-bound, bound)
-    
+
     
 
 def sparse_he_(model, r):

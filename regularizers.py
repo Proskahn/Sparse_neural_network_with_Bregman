@@ -69,7 +69,7 @@ class reg_l1_l2:
         ret = torch.clone(x)
         ret[ind] = x[ind]/nx[ind]
         return thresh * ret
-    
+
 # subclass for convolutional kernels
 class reg_l1_l2_conv(reg_l1_l2):
     def __init__(self, lamda=1.0):
@@ -96,10 +96,8 @@ class reg_l1_l1_l2:
         self.l1_l2 = reg_l1_l2(lamda=self.lamda)
         
     def __call__(self, x):
-        l1_penalty = self.l1(x)
-        l1_l2_penalty = self.l1_l2(x)
-        return l1_penalty + l1_l2_penalty
-        
+       return self.l1(x) + self.l1_l2(x)
+     
     def prox(self, x, delta=1.0):
         thresh = delta * self.lamda
                 
@@ -107,6 +105,22 @@ class reg_l1_l1_l2:
     
     def sub_grad(self, x):
         return self.lamda * (self.l1.sub_grad(x) + self.l1_l2.sub_grad(x))
+
+class reg_l1_l1_l2_conv:
+    def __init__(self, lamda=1.0):
+        self.lamda = lamda
+        self.l1 = reg_l1(lamda=self.lamda)
+        self.l1_l2_conv = reg_l1_l2_conv(lamda=self.lamda)
+        
+    def __call__(self, x):
+        return self.l1(x) + self.l1_l2_conv(x)
+        
+    def prox(self, x, delta=1.0):
+        thresh = delta * self.lamda
+        return self.l1_l2_conv.prox(self.l1.prox(x, thresh), thresh)
+    
+    def sub_grad(self, x):
+        return self.lamda * (self.l1.sub_grad(x) + self.l1_l2_conv.sub_grad(x))
     
 class reg_soft_bernoulli:
     def __init__(self,lamda=1.0):

@@ -3,7 +3,7 @@ import math
 import regularizers as reg
 
 class LinBreg(torch.optim.Optimizer):
-    def __init__(self,params,lr,reg=reg.reg_none(), delta=1.0, momentum=0.0):
+    def __init__(self,params,lr=1e-3,reg=reg.reg_none(), delta=1.0, momentum=0.0):
         if lr < 0.0:
             raise ValueError("Invalid learning rate")
             

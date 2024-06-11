@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, random_split
+from regularizers import reg_l1_l2
+import torch.optim as optim
 
 # torchvision
 from torchvision import datasets, transforms
@@ -41,26 +43,38 @@ class IoULoss(nn.Module):
     # end def
 # end class
 
-
-# Train step
-def train_step(conf, model, opt, train_loader):
+def train_step(conf, model, opt, train_loader, l1_lambda=0.01):
     tot_loss = 0.0
-    tot_steps = 0
     
     for batch_id, (x, y) in enumerate(train_loader):
         opt.zero_grad()
         logits = model(x)
         criterion = nn.CrossEntropyLoss(reduction='mean')
-        # Ensure the target tensor has the correct shape
         y = y.squeeze(1).long()
-        # Calculate loss
         loss = criterion(logits, y)
-
-        if hasattr(conf, "weight_reg"):
-            loss += conf.weight_reg(model)
+        
+        if isinstance(opt, optim.SGD):
+            l1_l2_regularization = 0.0
+            for param in model.parameters():
+                if param.requires_grad:
+                    l1_norm = torch.norm(param, p=1)  # L1 norm of parameter tensor
+                    l2_norm = torch.norm(param, p=2)  # L2 norm of parameter tensor
+                    regularization_term =conf.lamda_1*((conf.lamda_0)*l1_norm+(1-conf.lamda_0) * torch.sqrt(torch.tensor(param.shape[-1], dtype=torch.float)) * l2_norm * l1_norm)
+                    l1_l2_regularization += regularization_term
+            
+            # Add regularization term to the loss
+            loss += l1_l2_regularization
+        
         loss.backward()
         opt.step()
+        
         tot_loss += loss.item()
+    
+    avg_loss = tot_loss / (batch_id + 1)
+    print("Train Loss:", avg_loss)
+    return {'loss': avg_loss}
+
+
     
     # Print the current Dice score and loss after each epoch
     print("Train Loss:", tot_loss/(batch_id+1))
