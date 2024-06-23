@@ -89,38 +89,41 @@ class reg_l1_l2_conv(reg_l1_l2):
 
         
 class reg_l1_l1_l2:        
-    def __init__(self, lamda=1.0):
-        self.lamda = lamda
-        #TODO Add suitable normalization based on layer size
-        self.l1 = reg_l1(lamda=self.lamda)
-        self.l1_l2 = reg_l1_l2(lamda=self.lamda)
+    def __init__(self, lamda0=1.0, lamda1=1.0):
+        self.lamda0 = lamda0
+        self.lamda1= lamda1
+        self.l1 = reg_l1(lamda=1-self.lamda0)
+        self.l1_l2 = reg_l1_l2(lamda=self.lamda0)
         
     def __call__(self, x):
-       return self.l1(x) + self.l1_l2(x)
+       return self.lamda1*(self.l1(x) + self.l1_l2(x))
      
     def prox(self, x, delta=1.0):
-        thresh = delta * self.lamda
-                
-        return self.l1_l2.prox(self.l1.prox(x,thresh), thresh)
+            thresh_l1 = delta * self.lamda1 * (1 - self.lamda0)
+            thresh_l1_l2 = delta * self.lamda1 * self.lamda0
+            return self.l1_l2.prox(self.l1.prox(x, thresh_l1), thresh_l1_l2)
     
     def sub_grad(self, x):
-        return self.lamda * (self.l1.sub_grad(x) + self.l1_l2.sub_grad(x))
+        return self.lamda1 * (self.l1.sub_grad(x) + self.l1_l2.sub_grad(x))
 
 class reg_l1_l1_l2_conv:
-    def __init__(self, lamda=1.0):
-        self.lamda = lamda
-        self.l1 = reg_l1(lamda=self.lamda)
-        self.l1_l2_conv = reg_l1_l2_conv(lamda=self.lamda)
+    def __init__(self, lamda0=1.0,lamda1=1.0):
+        self.lamda0 = lamda0
+        self.lamda1 = lamda1
+
+        self.l1 = reg_l1(lamda=1-self.lamda0)
+        self.l1_l2_conv = reg_l1_l2_conv(lamda=self.lamda0)
         
     def __call__(self, x):
-        return self.l1(x) + self.l1_l2_conv(x)
-        
-    def prox(self, x, delta=1.0):
-        thresh = delta * self.lamda
-        return self.l1_l2_conv.prox(self.l1.prox(x, thresh), thresh)
+        return self.lamda1*(self.l1(x) + self.l1_l2_conv(x))
     
+    def prox(self, x, delta=1.0):
+        thresh_l1 = delta * self.lamda1 * (1 - self.lamda0)
+        thresh_l1_l2 = delta * self.lamda1 * self.lamda0
+        return self.l1_l2_conv.prox(self.l1.prox(x, thresh_l1), thresh_l1_l2)
+        
     def sub_grad(self, x):
-        return self.lamda * (self.l1.sub_grad(x) + self.l1_l2_conv.sub_grad(x))
+        return self.lamda1 * (self.l1.sub_grad(x) + self.l1_l2_conv.sub_grad(x))
     
 class reg_soft_bernoulli:
     def __init__(self,lamda=1.0):
