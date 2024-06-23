@@ -1,5 +1,4 @@
-# Image Classification Project README
-
+# Bregman semantic segmentation
 ## Overview
 This project focuses on semantic segmentation with new optimizer--Bregman method.
 
