@@ -31,16 +31,6 @@ where \( \alpha \in [0, 1] \) sets the relative influence of both terms.
 - **os**: Operating system interfaces.
 - **math**: Mathematical functions.
 
-### Custom Packages
-
-- **models.aux_funs**: Custom auxiliary functions for models.
-- **models.unet**: Implementation of UNet architecture for image segmentation.
-- **models.segnet**: Implementation of SegNet architecture for image segmentation.
-- **optimizers**: Custom optimization algorithms.
-- **regularizers**: Implementations of regularization techniques.
-- **train**: Modules for training neural networks.
-- **utils.configuration**: Utilities for configuration settings.
-- **utils.datasets**: Utilities for handling datasets.
 
 ### Additional Libraries
 
