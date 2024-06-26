@@ -45,16 +45,16 @@ def train_step(conf, model, opt, train_loader, l1_lambda=0.01):
         y = y.squeeze(1).long()
         loss = criterion(logits, y)
         
-        if isinstance(opt, optim.SGD):
-            l1_l2_regularization = 0.0
-            for param in model.parameters():
-                if param.requires_grad:
-                    l1_norm = torch.norm(param, p=1)
-                    l2_norm = torch.norm(param, p=2)
-                    regularization_term = conf.lamda_1 * ((1-conf.lamda_0) * l1_norm + conf.lamda_0 * torch.sqrt(torch.tensor(param.shape[-1], dtype=torch.float)) * l2_norm)
-                    l1_l2_regularization += regularization_term
+        # if isinstance(opt, optim.SGD):
+        #     l1_l2_regularization = 0.0
+        #     for param in model.parameters():
+        #         if param.requires_grad:
+        #             l1_norm = torch.norm(param, p=1)
+        #             l2_norm = torch.norm(param, p=2)
+        #             regularization_term = conf.lamda_1 * ((1-conf.lamda_0) * l1_norm + conf.lamda_0 * torch.sqrt(torch.tensor(param.shape[-1], dtype=torch.float)) * l2_norm)
+        #             l1_l2_regularization += regularization_term
             
-            loss += l1_l2_regularization
+        #     loss += l1_l2_regularization
         
         loss.backward()
         opt.step()
