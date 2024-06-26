@@ -47,7 +47,6 @@ $ sets the relative influence of both terms.
 
 ## Framework Versions
 
-- **TensorFlow**: 2.15.0
 - **torch**: 1.10.0
 
 
