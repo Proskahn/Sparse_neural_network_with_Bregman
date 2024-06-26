@@ -19,7 +19,7 @@ J(\theta) = \sum_{l=1}^L \lambda_1 \left(\lambda_0 \sqrt{P_l} \sum_{n=1}^{N_l} \
 $$
 
 where $$ 
-\( \lambda_0 \in [0, 1] \) 
+ \lambda_0 \in [0, 1] 
 $$ sets the relative influence of both terms.
 
 
