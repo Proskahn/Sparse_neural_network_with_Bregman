@@ -18,7 +18,7 @@ $$
 J(\theta) = \sum_{l=1}^L \lambda_1 \left(\lambda_0 \sqrt{P_l} \sum_{n=1}^{N_l} \left\|\theta_l^n\right\|_2 + (1-\lambda_0) \left\|\theta_l\right\|_1\right),
 $$
 
-where $\( \lambda_0 \in [0, 1] \)$ sets the relative influence of both terms.
+where $ \lambda_0 \in [0, 1] $ sets the relative influence of both terms.
 
 
 
