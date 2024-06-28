@@ -2,8 +2,6 @@
 ## Overview
 This project focuses on semantic segmentation with new optimizer--Bregman method.
 
-I have not finished all the numerical experiments. The results are on the way.
-
 ## Model
 
 UNet is a convolutional network architecture designed for biomedical image segmentation. It consists of a contracting path to capture context and a symmetric expanding path for precise localization.
