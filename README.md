@@ -1,6 +1,6 @@
 # Bregman semantic segmentation
 ## Overview
-This project focuses on semantic segmentation with new optimizer--Bregman method.
+This project focuses on semantic segmentation with new optimizer--Bregman method. We achieved same-level accuracy with only 30% non-zero parameters within one-shot training.
 
 ## Model
 
