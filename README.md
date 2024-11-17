@@ -1,6 +1,6 @@
 # Bregman semantic segmentation
 ## Overview
-This project test new optimizer--Bregman method in neural network training. While $\ell_1$-regularization doesn't significantly reduce the number of paramters in the neural network, we applied another approach, named Linearized Bregman method.
+This project test new optimizer--Bregman method in neural network training. While $\ell_1$-regularization is not always able to reduce the number of paramters, we applied another approach, named Linearized Bregman method.
 
 It is an iteration method that starts from sparse initializaiton and recovers the important parameters first(Here important means large gradient norm) while defers other parameters. Hence it keeps the sparisity all along the training.
 
