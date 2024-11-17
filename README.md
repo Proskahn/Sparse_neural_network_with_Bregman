@@ -1,10 +1,24 @@
 # Bregman semantic segmentation
 ## Overview
-This project focuses on semantic segmentation with new optimizer--Bregman method. We achieved same-level accuracy with only 30% non-zero parameters within one-shot training.
+This project test new optimizer--Bregman method in neural network training. While $\ell_1$-regularization is not always able to reduce the number of paramters, we applied another approach, named Linearized Bregman method.
+
+It is an iteration method that starts from sparse initializaiton and recovers the important parameters first(Here important means large gradient norm) while defers other parameters. Hence it keeps the sparisity all along the training.
+
+We tested on U-Net semantic segmentation, CT reconstrution and CT denosing. All the experiments demonstrate that Bregman method is able to significantly reduce the number of active parameters with negligible accuracy drop.
 
 ## Model
 
+Semantic segmentation:
+
 UNet is a convolutional network architecture designed for biomedical image segmentation. It consists of a contracting path to capture context and a symmetric expanding path for precise localization.
+
+CT Reconstruction:
+
+The network, named FullRecoNet, is structured as a fully connected architecture with 4 layers. Input Layer accepts a flattened sinogram as input, with dimensions set to match the flattened product of the original sinogram’s width and height ($5\times 41$ in this case).
+
+CT denosing:
+
+The 3-layer denoising network operates directly on $28 \times 28$ image reconstructions obtained from FBP. It takes an FBP reconstruction as input and learns to suppress noise and streak artifacts.
 
 ## Regularizers
 
@@ -31,6 +45,7 @@ where $ \lambda_0 \in [0, 1] $ sets the relative influence of both terms.
 - **sys**: System-specific parameters and functions.
 - **os**: Operating system interfaces.
 - **math**: Mathematical functions.
+- **odl**: 1.0.0dev.
 
 
 ### Additional Libraries
