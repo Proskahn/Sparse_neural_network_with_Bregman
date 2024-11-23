@@ -39,6 +39,43 @@ def sparsify_(model, sparsity, ltype = nn.Linear, conv_group=True, row_group = F
             c = w.view(w.shape[0]*w.shape[1],-1)
             m.weight.data = mask.mul(c).view(w.shape)
 
+def node_initialize_(model, sparsity):
+    """
+    Initialize certain nodes of a linear neural network to enforce a given sparsity level.
+    
+    Parameters:
+        model (torch.nn.Module): The linear neural network model.
+        sparsity (float): The desired sparsity level (0 to 1). 
+                          For example, sparsity=0.2 will zero out 20% of the output nodes.
+    
+    Returns:
+        None: Modifies the model in-place.
+    """
+    assert 0 <= sparsity <= 1, "Sparsity must be between 0 and 1"
+    
+    for m in model.modules():
+        if isinstance(m, torch.nn.Linear):
+            # Weight matrix and bias of the linear layer
+            weight_matrix = m.weight
+            bias_vector = m.bias
+            
+            # Total number of output nodes (rows in the weight matrix)
+            num_nodes = weight_matrix.size(0)
+            
+            # Number of nodes to deactivate
+            num_inactive_nodes = int(num_nodes * sparsity)
+            
+            # Randomly select nodes to deactivate
+            inactive_nodes = torch.randperm(num_nodes)[:num_inactive_nodes]
+            
+            # Zero out the corresponding rows in the weight matrix and biases
+            with torch.no_grad():
+                weight_matrix[inactive_nodes, :] = 0  # Zero out rows corresponding to inactive nodes
+                if bias_vector is not None:
+                    bias_vector[inactive_nodes] = 0  # Zero out corresponding biases as well
+
+            print(f"Initialized {num_inactive_nodes} nodes (sparsity={sparsity:.2f}) in layer {m}")
+
             
 def sparse_bias_uniform_(model, r0, r1, ltype=nn.Conv2d):
     for m in model.modules():
@@ -148,6 +185,39 @@ def net_sparsity(model):
             nnz += torch.count_nonzero(a.data).item()
     #
     return nnz/numel
+def node_sparsity_linear(model):
+    """
+    Calculate node sparsity for a linear network.
+    
+    Parameters:
+        model (torch.nn.Module): The linear model to analyze.
+    
+    Returns:
+        list: Node sparsity for each linear layer.
+    """
+    sparsity_per_layer = []
+    
+    # Iterate through all layers in the model
+    for m in model.modules():
+        if isinstance(m, torch.nn.Linear):
+            # Weight matrix of the layer
+            weight_matrix = m.weight
+            
+            # Compute L2 norm of each column (dim=0 for input connections)
+            node_norms = torch.norm(weight_matrix.data, p=2, dim=0)
+            
+            # Count non-zero node norms (active nodes)
+            active_nodes = torch.count_nonzero(node_norms).item()
+            
+            # Total number of nodes (columns in weight matrix)
+            total_nodes = weight_matrix.size(1)  # Second dimension is the number of nodes
+            
+            # Sparsity ratio
+            sparsity_ratio = active_nodes / total_nodes
+            sparsity_per_layer.append(sparsity_ratio)
+    
+    return sparsity_per_layer
+
 
 def node_sparsity(model):
     ret = []
