@@ -6,7 +6,7 @@ It is an iteration method that starts from sparse initializaiton and recovers th
 
 We tested on U-Net semantic segmentation, CT reconstrution and CT denosing. All the experiments demonstrate that Bregman method is able to significantly reduce the number of active parameters with negligible accuracy drop.
 
-## ExamPle result
+## Example result
 ![Figure 6: Example Results](Figure/Figure6/Figure6.png "Figure 6: Example Results")
 
 ## Model
