@@ -17,11 +17,8 @@ UNet is a convolutional network architecture designed for biomedical image segme
 
 CT Reconstruction:
 
-The network, named FullRecoNet, is structured as a fully connected architecture with 4 layers. Input Layer accepts a flattened sinogram as input, with dimensions set to match the flattened product of the original sinogram’s width and height ($5\times 41$ in this case).
+3 Models, ANN, AUTOMAP and iRandon are tested. Their reconstruction all outperform FBP reconstruction. Bregman method further introduces sparsity to these models.
 
-CT denosing:
-
-The 3-layer denoising network operates directly on $28 \times 28$ image reconstructions obtained from FBP. It takes an FBP reconstruction as input and learns to suppress noise and streak artifacts.
 
 ## Regularizers
 
