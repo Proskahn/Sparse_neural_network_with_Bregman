@@ -48,7 +48,7 @@ class ResNetCNN(nn.Module):
         return out
 
 class iRadonMap(nn.Module):
-    def __init__(self, input_size, output_size, num_blocks=5, hidden_size=256):
+    def __init__(self, input_size=205, output_size=784, num_blocks=5, hidden_size=256):
         super(iRadonMap, self).__init__()
         self.filtering = FilteringLayer(input_size, hidden_size)
         self.back_projection = SinusoidalBackProjectionLayer(hidden_size, output_size)
