@@ -3,14 +3,14 @@ import os
 
 # Define image directories and corresponding labels
 directories = [
-    r"ANNPROJECTION\ANN_5_projection",
-    r"ANNPROJECTION\ANN_72_projection",
-    r"ANNPROJECTION\ANN_360_projection"
+    r"ANNPROJECTION/ANN5PROJECTION",
+    r"ANNPROJECTION/ANN72PROJECTION",
+    r"ANNPROJECTION/ANN360PROJECTION"
 ]
 labels = [
-    "ANN_5_projection",
-    "ANN_72_projection",
-    "ANN_360_projection"
+    "ANN 5 projection",
+    "ANN 72 projection",
+    "ANN 360 projection"
 ]
 
 # Load images from each directory
